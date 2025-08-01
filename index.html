@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>KakaBillPay</title>
   <style>
+    /* ——— Styles are same as before ——— */
     body {
       font-family: 'Segoe UI', sans-serif;
       margin: 0;
@@ -16,8 +17,8 @@
       background: #6a4e42;
       color: white;
       padding: 1rem;
-      text-align: center;
       font-size: 1.7rem;
+      text-align: center;
       font-weight: bold;
     }
 
@@ -52,7 +53,6 @@
       font-weight: bold;
       text-align: center;
       margin: 0.5rem 0 1rem;
-      color: #333;
     }
 
     .add-form select,
@@ -71,10 +71,10 @@
     }
 
     .add-form label {
+      margin-top: 0.6rem;
       font-weight: bold;
       color: #444;
       display: block;
-      margin-top: 0.6rem;
     }
 
     .add-form .recurring {
@@ -148,7 +148,7 @@
       }
 
       .bill-info {
-        margin: 0.5rem 0 0 0;
+        margin-top: 0.5rem;
       }
 
       .totals {
@@ -159,7 +159,6 @@
 </head>
 <body>
   <header>KakaBillPay</header>
-
   <div class="container">
     <div class="month-nav">
       <button id="prevMonth">&larr; Prev</button>
@@ -172,7 +171,7 @@
     <form class="add-form" id="billForm">
       <label for="type">Bill Type</label>
       <select id="type" required>
-        <option value="">Choose...</option>
+        <option>Choose...</option>
         <option>Mortgage</option>
         <option>Rent</option>
         <option>Utilities</option>
@@ -190,7 +189,7 @@
 
       <label for="vendor">Vendor</label>
       <select id="vendor" required>
-        <option value="">Choose Vendor</option>
+        <option>Choose Vendor</option>
         <option>Verizon</option>
         <option>AT&T</option>
         <option>T-Mobile</option>
@@ -249,10 +248,19 @@
       "Progressive": "https://www.progressive.com"
     };
 
+    function saveToStorage() {
+      localStorage.setItem("kakaBillsData", JSON.stringify(billsData));
+    }
+
+    function loadFromStorage() {
+      const data = localStorage.getItem("kakaBillsData");
+      billsData = data ? JSON.parse(data) : {};
+    }
+
     vendorDropdown.addEventListener("change", () => {
-      const other = vendorDropdown.value === "Other";
-      vendorOtherInput.style.display = other ? "block" : "none";
-      vendorOtherInput.required = other;
+      const showCustom = vendorDropdown.value === "Other";
+      vendorOtherInput.style.display = showCustom ? "block" : "none";
+      vendorOtherInput.required = showCustom;
     });
 
     const monthNames = [
@@ -261,7 +269,7 @@
     ];
 
     let currentMonthIndex = new Date().getMonth();
-    let billsData = {}; // monthIndex => [bills]
+    let billsData = {};
 
     function updateMonthDisplay() {
       currentMonthDisplay.textContent = monthNames[currentMonthIndex];
@@ -278,11 +286,12 @@
       updateMonthDisplay();
     };
 
-    billForm.onsubmit = (e) => {
+    billForm.onsubmit = e => {
       e.preventDefault();
+
       const type = document.getElementById("type").value;
-      const vendorSelection = vendorDropdown.value;
-      const vendor = vendorSelection === "Other" ? vendorOtherInput.value.trim() : vendorSelection;
+      const vendorSelected = vendorDropdown.value;
+      const vendor = vendorSelected === "Other" ? vendorOtherInput.value.trim() : vendorSelected;
       const dueDate = document.getElementById("dueDate").value;
       const amount = parseFloat(document.getElementById("amount").value);
       const notes = document.getElementById("notes").value.trim();
@@ -290,28 +299,28 @@
 
       if (!type || !vendor || !dueDate || isNaN(amount)) return;
 
-      const newBill = {
+      const billTemplate = {
         id: Date.now(),
         type, vendor, dueDate, amount, notes,
         paid: false
       };
 
-      // Add to selected and future months if recurring
       for (let i = currentMonthIndex; i < 12; i++) {
         if (!billsData[i]) billsData[i] = [];
         if (i === currentMonthIndex || recurring) {
-          billsData[i].push({ ...newBill, id: Date.now() + i });
+          billsData[i].push({ ...billTemplate, id: Date.now() + i });
         }
       }
 
+      saveToStorage();
       billForm.reset();
-      vendorOtherInput.style.display = "none";
+      vendorOtherInput.style.display = 'none';
       updateMonthDisplay();
     };
 
     function renderBills() {
       const bills = billsData[currentMonthIndex] || [];
-      billList.innerHTML = "";
+      billList.innerHTML = '';
       let totalDue = 0;
 
       bills.forEach(bill => {
@@ -324,6 +333,7 @@
         checkbox.className = "paid-toggle";
         checkbox.onchange = () => {
           bill.paid = checkbox.checked;
+          saveToStorage();
           renderBills();
         };
 
@@ -339,24 +349,26 @@
         payBtn.textContent = "Pay Bill";
         payBtn.className = "pay-button";
         payBtn.onclick = () => {
-          if (vendorLinks[bill.vendor]) {
-            window.open(vendorLinks[bill.vendor], "_blank");
+          const url = vendorLinks[bill.vendor];
+          if (url) {
+            window.open(url, "_blank");
           } else {
-            alert(`Open your app or website for: ${bill.vendor}`);
+            alert(`Please open your app or visit the site for: ${bill.vendor}`);
           }
         };
 
-        const del = document.createElement("span");
-        del.className = "icon-delete";
-        del.innerHTML = "🗑️";
-        del.onclick = () => {
-          billsData[currentMonthIndex] = billsData[currentMonthIndex].filter(b => b.id !== bill.id);
+        const delBtn = document.createElement("span");
+        delBtn.className = "icon-delete";
+        delBtn.textContent = "🗑️";
+        delBtn.onclick = () => {
+          billsData[currentMonthIndex] = bills.filter(b => b.id !== bill.id);
+          saveToStorage();
           renderBills();
         };
 
         const right = document.createElement("div");
         right.appendChild(payBtn);
-        right.appendChild(del);
+        right.appendChild(delBtn);
 
         billDiv.appendChild(checkbox);
         billDiv.appendChild(info);
@@ -369,7 +381,11 @@
       totalDueDisplay.textContent = totalDue.toFixed(2);
     }
 
-    updateMonthDisplay();
+    // Load from localStorage on page load
+    window.addEventListener("DOMContentLoaded", () => {
+      loadFromStorage();
+      updateMonthDisplay();
+    });
   </script>
 </body>
 </html>
