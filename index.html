@@ -1,19 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>KakaBillPay</title>
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
       margin: 0;
-      background: #fff7f0;
+      background: #f9f9f6;
       color: #333;
     }
 
     header {
-      background: #f57c00;
+      background: #6a4e42;
       color: white;
       padding: 1rem;
       text-align: center;
@@ -25,20 +25,21 @@
       max-width: 900px;
       margin: 20px auto;
       padding: 20px;
-      background: #fff3e0;
+      background: #fffefc;
       border-radius: 8px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
     }
 
     .month-nav {
       display: flex;
       justify-content: space-between;
+      align-items: center;
       margin-bottom: 1rem;
     }
 
     .month-nav button {
-      background: #ef6c00;
-      color: #fff;
+      background: #5c8374;
+      color: white;
       border: none;
       padding: 0.5rem 1rem;
       border-radius: 6px;
@@ -46,30 +47,50 @@
       cursor: pointer;
     }
 
+    .totals {
+      font-size: 1.2rem;
+      font-weight: bold;
+      text-align: center;
+      margin: 0.5rem 0 1rem;
+      color: #333;
+    }
+
     .add-form select,
     .add-form input,
     .add-form textarea {
-      padding: 0.5rem;
+      padding: 0.8rem;
       margin: 0.4rem 0;
       width: 100%;
       border: 1px solid #ccc;
       border-radius: 6px;
-    }
-
-    .add-form button {
-      background: #d84315;
-      color: white;
-      border: none;
-      padding: 0.7rem;
-      width: 100%;
-      border-radius: 6px;
-      margin-top: 10px;
       font-size: 1rem;
-      cursor: pointer;
     }
 
     .add-form input[type='text']#vendorOther {
       display: none;
+    }
+
+    .add-form label {
+      font-weight: bold;
+      color: #444;
+      display: block;
+      margin-top: 0.6rem;
+    }
+
+    .add-form .recurring {
+      margin-top: 0.4rem;
+    }
+
+    .add-form button {
+      background: #4a6d7c;
+      color: white;
+      border: none;
+      padding: 0.8rem;
+      width: 100%;
+      border-radius: 6px;
+      font-size: 1.1rem;
+      margin-top: 10px;
+      cursor: pointer;
     }
 
     .bill-list {
@@ -80,11 +101,11 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      background: #fff8e1;
+      background: #f2f1ee;
       padding: 1rem;
       margin-bottom: 0.8rem;
-      border-left: 5px solid #f57c00;
-      border-radius: 4px;
+      border-left: 5px solid #6a4e42;
+      border-radius: 5px;
       flex-wrap: wrap;
     }
 
@@ -95,36 +116,29 @@
 
     .bill-info small {
       display: block;
-      color: #777;
+      color: #666;
     }
 
     .paid-toggle {
       margin-right: 10px;
     }
 
-    .totals {
-      margin-top: 1rem;
-      font-weight: bold;
-      font-size: 1.2rem;
-      text-align: right;
-    }
-
     .icon-delete {
-      color: #c62828;
+      color: #b00020;
       cursor: pointer;
       font-size: 1.2rem;
-      margin-left: 10px;
+      margin-left: 8px;
     }
 
     .pay-button {
-      background: #f9a825;
+      background: #9d5c63;
+      color: white;
+      padding: 0.4rem 0.8rem;
       border: none;
-      color: #fff;
-      padding: 0.4rem 0.7rem;
       border-radius: 5px;
-      cursor: pointer;
       font-size: 0.9rem;
       margin-top: 5px;
+      cursor: pointer;
     }
 
     @media (max-width: 700px) {
@@ -145,22 +159,28 @@
 </head>
 <body>
   <header>KakaBillPay</header>
+
   <div class="container">
     <div class="month-nav">
       <button id="prevMonth">&larr; Prev</button>
       <div id="currentMonth"></div>
       <button id="nextMonth">Next &rarr;</button>
     </div>
+    
+    <div class="totals">Total Due: $<span id="totalDue">0.00</span></div>
 
     <form class="add-form" id="billForm">
+      <label for="type">Bill Type</label>
       <select id="type" required>
-        <option value="">Select Bill Type</option>
+        <option value="">Choose...</option>
         <option>Mortgage</option>
         <option>Rent</option>
         <option>Utilities</option>
         <option>Internet</option>
         <option>Mobile</option>
         <option>Electricity</option>
+        <option>Water</option>
+        <option>Gas</option>
         <option>Insurance</option>
         <option>Streaming</option>
         <option>Credit Card</option>
@@ -168,8 +188,9 @@
         <option>Other</option>
       </select>
 
+      <label for="vendor">Vendor</label>
       <select id="vendor" required>
-        <option value="">Select Vendor</option>
+        <option value="">Choose Vendor</option>
         <option>Verizon</option>
         <option>AT&T</option>
         <option>T-Mobile</option>
@@ -178,20 +199,29 @@
         <option>Spectrum</option>
         <option>Netflix</option>
         <option>Hulu</option>
-        <option>Insurance Co</option>
+        <option>Amazon Prime</option>
+        <option>Geico</option>
+        <option>Progressive</option>
         <option>Other</option>
       </select>
 
       <input type="text" id="vendorOther" placeholder="Enter Vendor Name" />
 
+      <label for="dueDate">Due Date</label>
       <input type="date" id="dueDate" required />
+
+      <label for="amount">Amount</label>
       <input type="number" id="amount" placeholder="Amount ($)" required />
-      <textarea id="notes" rows="2" placeholder="Optional Notes..."></textarea>
+
+      <label for="notes">Notes</label>
+      <textarea id="notes" rows="2" placeholder="Optional notes..."></textarea>
+
+      <label class="recurring"><input type="checkbox" id="recurring" /> Add to all future months</label>
+
       <button type="submit">Add Bill</button>
     </form>
 
     <div class="bill-list" id="billList"></div>
-    <div class="totals">Total Due: $<span id="totalDue">0.00</span></div>
   </div>
 
   <script>
@@ -203,6 +233,7 @@
     const nextMonthBtn = document.getElementById("nextMonth");
     const vendorDropdown = document.getElementById("vendor");
     const vendorOtherInput = document.getElementById("vendorOther");
+    const recurringCheckbox = document.getElementById("recurring");
 
     const vendorLinks = {
       "Verizon": "https://www.verizon.com",
@@ -212,18 +243,17 @@
       "Xfinity": "https://www.xfinity.com",
       "Spectrum": "https://www.spectrum.com",
       "Netflix": "https://www.netflix.com",
-      "Hulu": "https://www.hulu.com"
+      "Hulu": "https://www.hulu.com",
+      "Amazon Prime": "https://www.amazon.com/prime",
+      "Geico": "https://www.geico.com",
+      "Progressive": "https://www.progressive.com"
     };
 
-    vendorDropdown.onchange = () => {
-      if (vendorDropdown.value === "Other") {
-        vendorOtherInput.style.display = 'block';
-        vendorOtherInput.required = true;
-      } else {
-        vendorOtherInput.style.display = 'none';
-        vendorOtherInput.required = false;
-      }
-    };
+    vendorDropdown.addEventListener("change", () => {
+      const other = vendorDropdown.value === "Other";
+      vendorOtherInput.style.display = other ? "block" : "none";
+      vendorOtherInput.required = other;
+    });
 
     const monthNames = [
       "January", "February", "March", "April", "May", "June",
@@ -231,7 +261,7 @@
     ];
 
     let currentMonthIndex = new Date().getMonth();
-    const billsData = {}; // monthIndex => [bills]
+    let billsData = {}; // monthIndex => [bills]
 
     function updateMonthDisplay() {
       currentMonthDisplay.textContent = monthNames[currentMonthIndex];
@@ -248,14 +278,15 @@
       updateMonthDisplay();
     };
 
-    billForm.onsubmit = e => {
+    billForm.onsubmit = (e) => {
       e.preventDefault();
       const type = document.getElementById("type").value;
-      const vendorSelect = vendorDropdown.value;
-      const vendor = vendorSelect === "Other" ? vendorOtherInput.value.trim() : vendorSelect;
+      const vendorSelection = vendorDropdown.value;
+      const vendor = vendorSelection === "Other" ? vendorOtherInput.value.trim() : vendorSelection;
       const dueDate = document.getElementById("dueDate").value;
       const amount = parseFloat(document.getElementById("amount").value);
       const notes = document.getElementById("notes").value.trim();
+      const recurring = recurringCheckbox.checked;
 
       if (!type || !vendor || !dueDate || isNaN(amount)) return;
 
@@ -265,11 +296,17 @@
         paid: false
       };
 
-      if (!billsData[currentMonthIndex]) billsData[currentMonthIndex] = [];
-      billsData[currentMonthIndex].push(newBill);
+      // Add to selected and future months if recurring
+      for (let i = currentMonthIndex; i < 12; i++) {
+        if (!billsData[i]) billsData[i] = [];
+        if (i === currentMonthIndex || recurring) {
+          billsData[i].push({ ...newBill, id: Date.now() + i });
+        }
+      }
+
       billForm.reset();
-      vendorOtherInput.style.display = 'none';
-      renderBills();
+      vendorOtherInput.style.display = "none";
+      updateMonthDisplay();
     };
 
     function renderBills() {
@@ -313,17 +350,17 @@
         del.className = "icon-delete";
         del.innerHTML = "🗑️";
         del.onclick = () => {
-          billsData[currentMonthIndex] = bills.filter(b => b.id !== bill.id);
+          billsData[currentMonthIndex] = billsData[currentMonthIndex].filter(b => b.id !== bill.id);
           renderBills();
         };
 
-        const rightControls = document.createElement("div");
-        rightControls.appendChild(payBtn);
-        rightControls.appendChild(del);
+        const right = document.createElement("div");
+        right.appendChild(payBtn);
+        right.appendChild(del);
 
         billDiv.appendChild(checkbox);
         billDiv.appendChild(info);
-        billDiv.appendChild(rightControls);
+        billDiv.appendChild(right);
         billList.appendChild(billDiv);
 
         if (!bill.paid) totalDue += bill.amount;
