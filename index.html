@@ -1,1 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Bills Manager</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      background-color: #f2f4f7;
+      color: #333;
+    }
+
+    header {
+      background: #4A90E2;
+      color: white;
+      padding: 1rem;
+      text-align: center;
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 20px auto;
+      padding: 20px;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    }
+
+    .month-nav {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+
+    .month-nav button {
+      background: #4A90E2;
+      color: #fff;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    .add-form input, .add-form select, .add-form textarea {
+      padding: 0.5rem;
+      margin: 0.4rem 0;
+      width: 100%;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+
+    .add-form button {
+      background: #28a745;
+      color: white;
+      border: none;
+      padding: 0.7rem;
+      width: 100%;
+      border-radius: 6px;
+      margin-top: 10px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    .bill-list {
+      margin-top: 2rem;
+    }
+
+    .bill-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #f9f9f9;
+      padding: 1rem;
+      margin-bottom: 0.8rem;
+      border-left: 5px solid #4A90E2;
+      border-radius: 4px;
+    }
+
+    .bill-info {
+      flex: 1;
+      margin-left: 1rem;
+    }
+
+    .bill-info small {
+      display: block;
+      color: #777;
+    }
+
+    .paid-toggle {
+      margin-right: 10px;
+    }
+
+    .totals {
+      margin-top: 1rem;
+      font-weight: bold;
+      font-size: 1.2rem;
+      text-align: right;
+    }
+
+    .icon-delete {
+      color: #dc3545;
+      cursor: pointer;
+      font-size: 1.2rem;
+    }
+
+    @media (max-width: 700px) {
+      .bill-item {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .bill-info {
+        margin: 0.5rem 0 0 0;
+      }
+
+      .totals {
+        text-align: left;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    Bills Manager
+  </header>
+  <div class="container">
+    <div class="month-nav">
+      <button id="prevMonth">&larr; Prev</button>
+      <div id="currentMonth"></div>
+      <button id="nextMonth">Next &rarr;</button>
+    </div>
+
+    <form class="add-form" id="billForm">
+      <input type="text" id="type" placeholder="Type (Rent, Internet, etc)" required />
+      <input type="text" id="vendor" placeholder="Vendor Name (e.g. Verizon)" required />
+      <input type="date" id="dueDate" required />
+      <input type="number" id="amount" placeholder="Amount ($)" required />
+      <textarea id="notes" rows="2" placeholder="Optional Notes..."></textarea>
+      <button type="submit">Add Bill</button>
+    </form>
+
+    <div class="bill-list" id="billList"></div>
+    <div class="totals">Total Due: $<span id="totalDue">0.00</span></div>
+  </div>
+
+  <script>
+    const billForm = document.getElementById("billForm");
+    const billList = document.getElementById("billList");
+    const totalDueDisplay = document.getElementById("totalDue");
+    const currentMonthDisplay = document.getElementById("currentMonth");
+    const prevMonthBtn = document.getElementById("prevMonth");
+    const nextMonthBtn = document.getElementById("nextMonth");
+
+    const monthNames = [
+      "January", "February", "March", "April", "May", "June",
+      "July", "August", "September", "October", "November", "December"
+    ];
+
+    let currentMonthIndex = new Date().getMonth();
+    const billsData = {}; // monthIndex => [bills]
+
+    function updateMonthDisplay() {
+      currentMonthDisplay.textContent = monthNames[currentMonthIndex];
+      renderBills();
+    }
+
+    prevMonthBtn.onclick = () => {
+      currentMonthIndex = (currentMonthIndex + 11) % 12;
+      updateMonthDisplay();
+    };
+
+    nextMonthBtn.onclick = () => {
+      currentMonthIndex = (currentMonthIndex + 1) % 12;
+      updateMonthDisplay();
+    };
+
+    billForm.onsubmit = e => {
+      e.preventDefault();
+      const type = document.getElementById("type").value.trim();
+      const vendor = document.getElementById("vendor").value.trim();
+      const dueDate = document.getElementById("dueDate").value;
+      const amount = parseFloat(document.getElementById("amount").value);
+      const notes = document.getElementById("notes").value.trim();
+
+      if (!type || !vendor || !dueDate || isNaN(amount)) return;
+
+      const newBill = {
+        id: Date.now(),
+        type, vendor, dueDate, amount, notes,
+        paid: false
+      };
+
+      if (!billsData[currentMonthIndex]) billsData[currentMonthIndex] = [];
+      billsData[currentMonthIndex].push(newBill);
+      billForm.reset();
+      renderBills();
+    };
+
+    function renderBills() {
+      const bills = billsData[currentMonthIndex] || [];
+      billList.innerHTML = "";
+      let totalDue = 0;
+
+      bills.forEach(bill => {
+        const billDiv = document.createElement("div");
+        billDiv.className = "bill-item";
+
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.checked = bill.paid;
+        checkbox.className = "paid-toggle";
+        checkbox.onchange = () => {
+          bill.paid = checkbox.checked;
+          renderBills();
+        };
+
+        const info = document.createElement("div");
+        info.className = "bill-info";
+        info.innerHTML = `
+          <strong>${bill.type} - $${bill.amount.toFixed(2)} (${bill.paid ? 'Paid' : 'Unpaid'})</strong>
+          <small>Vendor: ${bill.vendor} | Due: ${bill.dueDate}</small>
+          ${bill.notes ? `<small>Notes: ${bill.notes}</small>` : ""}
+        `;
+
+        const del = document.createElement("span");
+        del.className = "icon-delete";
+        del.innerHTML = "🗑️";
+        del.onclick = () => {
+          billsData[currentMonthIndex] = bills.filter(b => b.id !== bill.id);
+          renderBills();
+        };
+
+        billDiv.appendChild(checkbox);
+        billDiv.appendChild(info);
+        billDiv.appendChild(del);
+        billList.appendChild(billDiv);
+
+        if (!bill.paid) totalDue += bill.amount;
+      });
+
+      totalDueDisplay.textContent = totalDue.toFixed(2);
+    }
+
+    updateMonthDisplay();
+  </script>
+</body>
+</html>
 
