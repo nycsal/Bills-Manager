@@ -2,209 +2,296 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>KakaBillPay</title>
   <style>
     body {
-      font-family: 'Segoe UI', sans-serif;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       margin: 0;
       padding: 0;
-      background: #f9f9f6;
-      color: #333;
+      background: #f3f6fa;
+      color: #23223b;
       overflow-x: hidden;
     }
 
     header {
-      background: #6a4e42;
+      background: linear-gradient(90deg, #4a6680 0%, #634a6a 100%);
       color: white;
-      padding: 1rem;
-      font-size: 1.7rem;
+      padding: 1.2rem 0;
+      font-size: 2rem;
       text-align: center;
-      font-weight: bold;
+      font-weight: 700;
+      letter-spacing: .05em;
       position: sticky;
       top: 0;
       z-index: 10;
+      box-shadow: 0 6px 20px 0 rgba(100,80,120,0.11);
     }
 
     .container {
-      max-width: 900px;
+      max-width: 500px;
       margin: 0 auto;
-      padding: 20px;
+      padding: 18px 12px 70px 12px;
     }
 
     .month-nav {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 0.5rem;
+      margin-bottom: 0.7rem;
+      gap: 0.4rem;
     }
-
     .month-nav button {
-      background: #5c8374;
-      color: white;
+      background: #668fd1;
+      color: #fff;
       border: none;
-      padding: 0.5rem 1.2rem;
+      padding: 0.55rem 1.1rem;
       border-radius: 6px;
       font-size: 1rem;
+      font-weight: 600;
       cursor: pointer;
+      transition: background 0.18s;
+      box-shadow: 0 2px 4px rgba(70,110,180,0.08);
     }
-
+    .month-nav button:hover {
+      background: #496ca6;
+    }
     .totals {
-      font-size: 1.2rem;
-      font-weight: bold;
+      font-size: 1.15rem;
+      font-weight: 600;
       text-align: center;
-      margin: 0.5rem 0 1rem;
+      margin: 0.6rem 0 0.6rem;
+      padding: 0.4rem;
+      background: #eff3fa;
+      border-radius: 6px;
+      box-shadow: 0 1px 6px rgba(60,60,90,0.06);
+      color: #3d4e61;
+      letter-spacing:.01em;
     }
 
     .plus-btn {
       display: flex;
       justify-content: center;
       align-items: center;
-      font-size: 2.5rem;
-      color: white;
-      background: #4a6d7c;
-      width: 60px;
-      height: 60px;
+      font-size: 2.7rem;
+      color: #fff;
+      background: linear-gradient(135deg,#6d7ad3 0,#966cd7 100%);
+      width: 62px; height: 62px;
       border-radius: 50%;
-      margin: 20px auto;
+      margin: 28px auto 20px;
       cursor: pointer;
-      transform: scale(1);
-      transition: transform 0.25s ease;
+      box-shadow: 0 7px 20px rgba(80,70,140,0.16);
+      transition: background 0.21s, transform 0.19s;
+      animation: btnpulse 1.1s infinite alternate;
+      border: none;
+      outline: none;
+      position:relative;
+      z-index: 5;
     }
-
-    .plus-btn:hover {
-      transform: scale(1.1);
-      background-color: #3e5d68;
+    .plus-btn:hover, .plus-btn:active {
+      background: linear-gradient(135deg,#966cd7 0,#6d7ad3 100%);
+      transform: scale(1.11);
+      animation: none;
+    }
+    @keyframes btnpulse {
+      0% { box-shadow: 0 7px 28px #af79e720;}
+      100% { box-shadow: 0 13px 40px #614bcb28; }
     }
 
     .add-form {
       display: none;
-      animation: fadeIn 0.3s ease;
-      background: #fffefc;
-      border: 1px solid #ccc;
-      padding: 20px;
-      border-radius: 8px;
-      margin: 20px 0;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      animation: fadeIn 0.23s;
+      background: #fff;
+      box-shadow: 0 2px 12px #8e5bea18;
+      border-radius: 11px;
+      padding: 20px 18px;
+      margin: 0px auto 25px;
+      max-width: 460px;
+      position:relative;
     }
-
     @keyframes fadeIn {
       0% {opacity: 0;}
       100% {opacity: 1;}
     }
 
     .add-form label {
-      font-weight: bold;
-      margin-top: 0.6rem;
+      font-weight: 600;
+      margin-top: 1.08rem;
       display: block;
+      color: #4a4b67;
+      letter-spacing:.01em;
+      font-size: 1.01rem;
     }
 
     .add-form select,
     .add-form input,
     .add-form textarea {
-      padding: 0.85rem;
-      margin: 0.35rem 0;
+      padding: 1.03rem 0.9rem;
+      margin: 0.42rem 0 0.42rem 0;
       width: 100%;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      font-size: 1rem;
+      border: 1.7px solid #e0e2e9;
+      border-radius: 7px;
+      font-size: 1.09rem;
+      font-family: inherit;
+      background: #f6f7fb;
+      outline: none;
+      transition: border .17s;
       box-sizing: border-box;
+      font-weight: 500;
+      color: #3d4565;
+    }
+
+    .add-form select:focus,
+    .add-form input:focus,
+    .add-form textarea:focus {
+      border: 1.8px solid #7966e2;
+      background: #f1f1ff;
     }
 
     .add-form input#vendorOther {
       display: none;
     }
-
+    .add-form .recurringLabel {
+      font-weight: 600;
+      margin-top: 0.85rem;
+      color: #7f57bd;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      font-size: 1.04rem;
+      user-select:none;
+    }
+    .add-form .recurringLabel input[type="checkbox"] {
+      accent-color:#854cc1;
+      width: 18px;
+      height:18px;
+      margin:0;
+    }
     .add-form button {
-      background: #4a6d7c;
+      margin-top: 16px;
+      background: linear-gradient(90deg,#7f57e6 0,#5d8bc8 100%);
       color: white;
       border: none;
-      padding: 0.85rem;
+      padding: 1.08rem;
       width: 100%;
-      border-radius: 6px;
-      font-size: 1.1rem;
-      margin-top: 10px;
+      border-radius: 7px;
+      font-size: 1.11rem;
       cursor: pointer;
+      font-weight: 700;
+      transition: background .21s, box-shadow .17s;
+      box-shadow: 0 2px 16px #7f52b51b;
+    }
+    .add-form button:hover {
+      background: linear-gradient(90deg,#5d8bc8 0,#7f57e6 100%);
     }
 
     .bill-list {
-      margin-top: 2rem;
+      margin-top: 1.5rem;
+      margin-bottom:90px;
     }
-
     .bill-item {
       display: flex;
       justify-content: space-between;
-      background: #f2f1ee;
-      padding: 1rem;
-      margin-bottom: 0.8rem;
-      border-left: 5px solid #6a4e42;
-      border-radius: 5px;
-      flex-wrap: wrap;
+      align-items: stretch;
+      margin-bottom: 0.87rem;
+      background: #fff;
+      border-left: 5px solid #7e77bb;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px #7e77bb11;
+      min-height:72px;
+      cursor:pointer;
+      transition: box-shadow .15s;
+      position:relative;
     }
-
+    .bill-item:hover,.bill-item:focus-within {
+      box-shadow: 0 5px 22px #765be415;
+      border-left: 5px solid #a478d8;
+    }
     .bill-info {
-      flex: 1;
+      flex: 1 1 63%;
       margin-left: 1rem;
+      padding: 0.4rem 0 0.4rem 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
     }
 
+    .bill-info strong {
+      font-size: 1.13rem;
+      color:#46375d;
+    }
     .bill-info small {
       display: block;
-      color: #666;
+      color: #76779e;
+      font-size: 0.97rem;
+      font-weight: 500;
     }
 
     .paid-toggle {
-      margin-right: 10px;
+      margin: 0.3rem 0.8rem 0 0.8rem;
+      width: 21px; height: 21px;
+      accent-color:#49c093;
+      cursor:pointer;
     }
-
     .icon-delete {
-      color: #b00020;
+      color: #cd2656;
       cursor: pointer;
-      font-size: 1.2rem;
-      margin-left: 8px;
+      font-size: 1.25rem;
+      margin-left: 13px;
+      margin-right:3px;
+      vertical-align:middle;
+      transition: color .16s;
     }
-
+    .icon-delete:hover {
+      color:#7e1515;
+    }
     .pay-button {
-      background: #9d5c63;
+      background: linear-gradient(90deg,#836ccf,#66c2cb);
       color: white;
-      padding: 0.4rem 0.8rem;
       border: none;
-      border-radius: 5px;
-      font-size: 0.9rem;
-      margin-top: 5px;
-      cursor: pointer;
+      padding: 0.45rem 1.06rem;
+      border-radius: 6px;
+      font-size: 0.97rem;
+      font-weight: 700;
+      margin-top: 4px;
+      cursor:pointer;
+      transition: background .15s;
+      margin-left:4px;
     }
-
-    @media (max-width: 700px) {
-      .bill-item {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-
-      .bill-info {
-        margin-top: 0.5rem;
-      }
-
-      .totals {
-        text-align: left;
-      }
+    .pay-button:hover {
+      background: linear-gradient(270deg,#66c2cb,#836ccf);
+    }
+    .bill-actions {
+      display: flex;
+      flex-direction:column;
+      justify-content: center;
+      align-items: flex-end;
+      margin-right: 0.7rem;
+      min-width: 110px;
+      gap:7px;
+    }
+    @media (max-width: 650px) {
+      .container { padding:9px 2px 55px 2px; }
+      .add-form { padding:18px 6px;}
+      .bill-item{flex-direction:column;}
+      .bill-info{margin-left:0;}
+      .bill-actions{align-items:flex-start;margin:8px 0 2px 1.2rem;}
     }
   </style>
 </head>
 <body>
   <header>KakaBillPay</header>
-
   <div class="container">
     <div class="month-nav">
       <button id="prevMonth">&larr; Prev</button>
       <div id="currentMonth"></div>
       <button id="nextMonth">Next &rarr;</button>
     </div>
-
     <div class="totals">Total Due: $<span id="totalDue">0.00</span></div>
-
-    <div id="showAddBtn" class="plus-btn" title="Add New Bill">+</div>
-
-    <form class="add-form" id="billForm">
+    <button id="showAddBtn" class="plus-btn" type="button" title="Add New Bill">+</button>
+    <form class="add-form" id="billForm" autocomplete="off">
+      <input type="hidden" id="editId" value="">
       <label for="type">Bill Type</label>
       <select id="type" required>
         <option>Choose...</option>
@@ -222,7 +309,6 @@
         <option>Loan</option>
         <option>Other</option>
       </select>
-
       <label for="vendor">Vendor</label>
       <select id="vendor" required>
         <option>Choose Vendor</option>
@@ -239,27 +325,22 @@
         <option>Progressive</option>
         <option>Other</option>
       </select>
-
       <input type="text" id="vendorOther" placeholder="Enter Vendor Name" />
-
       <label for="dueDate">Due Date</label>
       <input type="date" id="dueDate" required />
-
       <label for="amount">Amount</label>
-      <input type="number" id="amount" placeholder="Amount ($)" required />
-
+      <input type="number" id="amount" min="0" step="0.01" placeholder="Amount ($)" required />
       <label for="notes">Notes</label>
       <textarea id="notes" rows="2" placeholder="Optional notes..."></textarea>
-
-      <label><input type="checkbox" id="recurring" /> Add to all future months</label>
-
-      <button type="submit">Add Bill</button>
+      <label class="recurringLabel" for="recurring">
+        <input type="checkbox" id="recurring" /> Make this a reoccurring payment (adds to all months)
+      </label>
+      <button type="submit" id="saveBtn">Save Bill</button>
     </form>
-
     <div class="bill-list" id="billList"></div>
   </div>
-
   <script>
+    // ---- references ----
     const billForm = document.getElementById("billForm");
     const billList = document.getElementById("billList");
     const totalDueDisplay = document.getElementById("totalDue");
@@ -270,7 +351,14 @@
     const vendorDropdown = document.getElementById("vendor");
     const vendorOtherInput = document.getElementById("vendorOther");
     const recurringCheckbox = document.getElementById("recurring");
+    const typeInput = document.getElementById("type");
+    const dueDateInput = document.getElementById("dueDate");
+    const amountInput = document.getElementById("amount");
+    const notesInput = document.getElementById("notes");
+    const editIdInput = document.getElementById("editId");
+    const saveBtn = document.getElementById("saveBtn");
 
+    // Make vendor links as before
     const vendorLinks = {
       "Verizon": "https://www.verizon.com",
       "AT&T": "https://www.att.com",
@@ -285,154 +373,214 @@
       "Progressive": "https://www.progressive.com"
     };
 
+    // ---- state ----
+    const monthNames = [
+      "January", "February", "March", "April", "May", "June",
+      "July", "August", "September", "October", "November", "December"
+    ];
+    let currentMonthIndex = new Date().getMonth();
+    let billsData = {};
+
+    // ---- persistence ----
+    function saveToStorage() {
+      localStorage.setItem("kakaBillsData", JSON.stringify(billsData));
+    }
+    function loadFromStorage() {
+      const data = localStorage.getItem("kakaBillsData");
+      billsData = data ? JSON.parse(data) : {};
+    }
+
+    // ---- vendor <select> logic ----
     vendorDropdown.addEventListener("change", () => {
       const showOther = vendorDropdown.value === "Other";
       vendorOtherInput.style.display = showOther ? "block" : "none";
       vendorOtherInput.required = showOther;
     });
 
-    plusBtn.addEventListener("click", () => {
-      billForm.style.display = billForm.style.display === "none" ? "block" : "none";
-    });
-
-    const monthNames = [
-      "January", "February", "March", "April", "May", "June",
-      "July", "August", "September", "October", "November", "December"
-    ];
-
-    let currentMonthIndex = new Date().getMonth();
-    let billsData = {};
-
-    function saveToStorage() {
-      localStorage.setItem("kakaBillsData", JSON.stringify(billsData));
+    // ---- show form on + button (single tap) ----
+    plusBtn.onclick = () => {
+      showForm();
+    };
+    function showForm(bill) {
+      billForm.reset();
+      editIdInput.value = "";
+      billForm.style.display = "block";
+      setTimeout(()=>{billForm.scrollIntoView({behavior:"smooth",block:"center"});},80);
+      if (bill) {
+        typeInput.value = bill.type || "";
+        vendorDropdown.value = vendorDropdown.options.namedItem(bill.vendor) ? bill.vendor : "Other";
+        if (vendorDropdown.value === "Other") {
+          vendorOtherInput.value = bill.vendor;
+          vendorOtherInput.style.display = "block";
+        }
+        else vendorOtherInput.style.display = "none";
+        dueDateInput.value = bill.dueDate;
+        amountInput.value = bill.amount;
+        notesInput.value = bill.notes||"";
+        recurringCheckbox.checked = bill.recurring || false;
+        editIdInput.value = bill.id;
+        saveBtn.textContent = "Update Bill";
+      } else {
+        vendorOtherInput.style.display = "none";
+        saveBtn.textContent = "Save Bill";
+      }
+    }
+    function hideForm() {
+      billForm.style.display="none";
+      vendorOtherInput.style.display = "none";
+      editIdInput.value = "";
     }
 
-    function loadFromStorage() {
-      const data = localStorage.getItem("kakaBillsData");
-      billsData = data ? JSON.parse(data) : {};
-    }
-
-    prevMonthBtn.onclick = () => {
+    // ---- month navigation ----
+    prevMonthBtn.onclick = function() {
       currentMonthIndex = (currentMonthIndex + 11) % 12;
       updateMonthDisplay();
     };
-
-    nextMonthBtn.onclick = () => {
+    nextMonthBtn.onclick = function() {
       currentMonthIndex = (currentMonthIndex + 1) % 12;
       updateMonthDisplay();
     };
+    function updateMonthDisplay() {
+      currentMonthDisplay.textContent = monthNames[currentMonthIndex];
+      renderBills();
+    }
 
+    // ---- add/edit a bill ----
     billForm.onsubmit = function (e) {
       e.preventDefault();
-
-      const type = document.getElementById("type").value;
+      const editId = editIdInput.value;
+      const type = typeInput.value;
       const vendorSelected = vendorDropdown.value;
       const vendor = vendorSelected === "Other" ? vendorOtherInput.value.trim() : vendorSelected;
-      const dueDate = document.getElementById("dueDate").value;
-      const amount = parseFloat(document.getElementById("amount").value);
-      const notes = document.getElementById("notes").value.trim();
+      const dueDate = dueDateInput.value;
+      const amount = parseFloat(amountInput.value);
+      const notes = notesInput.value.trim();
       const recurring = recurringCheckbox.checked;
-
       if (!type || !vendor || !dueDate || isNaN(amount)) return;
-
       const due = new Date(dueDate);
       const dueMonthIndex = due.getMonth();
 
-      const billTemplate = {
-        id: Date.now(),
-        type, vendor, dueDate, amount, notes,
-        paid: false
-      };
-
-      for (let i = dueMonthIndex; i < 12; i++) {
-        if (!billsData[i]) billsData[i] = [];
-        if (i === dueMonthIndex || recurring) {
-          billsData[i].push({ ...billTemplate, id: Date.now() + i });
+      if (editId) {
+        // Update all instances of this id across all months
+        Object.keys(billsData).forEach(month => {
+          billsData[month] = (billsData[month]||[]).map(bill =>
+            bill.id == editId
+              ? { ...bill, type, vendor, dueDate, amount, notes, recurring }
+              : bill
+          );
+        });
+      } else {
+        const billTemplate = {
+          id: Date.now()*1000 + Math.floor(Math.random()*30000),
+          type, vendor, dueDate, amount, notes,
+          recurring
+        };
+        // Recurring: add to all months w/ same due date;
+        for (let i = 0; i < 12; ++i) {
+          const thisMonth = i;
+          if (thisMonth === dueMonthIndex || recurring) {
+            const d = new Date(dueDate);
+            d.setMonth(thisMonth);
+            const copy = { ...billTemplate, dueDate: d.toISOString().slice(0,10), id: Date.now()*1000 + i };
+            if (!billsData[thisMonth]) billsData[thisMonth]=[];
+            billsData[thisMonth].push(copy);
+          }
         }
       }
-
       saveToStorage();
-      billForm.reset();
-      billForm.style.display = "none";
-      vendorOtherInput.style.display = "none";
+      hideForm();
       updateMonthDisplay();
     };
 
+    // ---- render bills ----
     function renderBills() {
-      const bills = billsData[currentMonthIndex] || [];
+      const bills = (billsData[currentMonthIndex]||[]).filter(bill => {
+        const due = new Date(bill.dueDate);
+        return due.getMonth()===currentMonthIndex;
+      });
       billList.innerHTML = "";
       let totalDue = 0;
 
       bills.forEach(bill => {
-        const due = new Date(bill.dueDate);
-        if (due.getMonth() !== currentMonthIndex) return;
-
         const billDiv = document.createElement("div");
         billDiv.className = "bill-item";
+        billDiv.tabIndex=0;
 
+        // click to edit
+        billDiv.onclick = function(e){
+          if (e.target.classList.contains('pay-button') || e.target.classList.contains('icon-delete') || e.target.classList.contains('paid-toggle')) return;
+          showForm(bill);
+        };
+
+        // paid checkbox
         const checkbox = document.createElement("input");
         checkbox.type = "checkbox";
         checkbox.checked = bill.paid;
         checkbox.className = "paid-toggle";
-        checkbox.onchange = () => {
+        checkbox.onclick = function(e){
           bill.paid = checkbox.checked;
           saveToStorage();
           renderBills();
+          e.stopPropagation();
         };
 
+        // info
         const info = document.createElement("div");
         info.className = "bill-info";
         info.innerHTML = `
           <strong>${bill.type} - $${bill.amount.toFixed(2)} (${bill.paid ? 'Paid' : 'Unpaid'})</strong>
           <small>Vendor: ${bill.vendor} | Due: ${bill.dueDate}</small>
           ${bill.notes ? `<small>Notes: ${bill.notes}</small>` : ""}
+          ${bill.recurring?' <small style="color:#9072c3;">Recurring</small>':""}
         `;
 
+        // actions
         const payBtn = document.createElement("button");
         payBtn.className = "pay-button";
         payBtn.textContent = "Pay Bill";
-        payBtn.onclick = () => {
+        payBtn.onclick = function(e){
           const url = vendorLinks[bill.vendor];
-          if (url) {
-            window.open(url, "_blank");
-          } else {
-            alert(`Please visit or open the app for: ${bill.vendor}`);
-          }
+          if (url) window.open(url,"_blank");
+          else alert(`Please visit or open the app for: ${bill.vendor}`);
+          e.stopPropagation();
         };
 
         const delBtn = document.createElement("span");
         delBtn.className = "icon-delete";
         delBtn.textContent = "🗑️";
-        delBtn.onclick = () => {
-          billsData[currentMonthIndex] = billsData[currentMonthIndex].filter(b => b.id !== bill.id);
+        delBtn.onclick = function(e){
+          billsData[currentMonthIndex]=billsData[currentMonthIndex].filter(b=>b.id !== bill.id);
           saveToStorage();
           renderBills();
+          e.stopPropagation();
         };
 
-        const rightControls = document.createElement("div");
-        rightControls.appendChild(payBtn);
-        rightControls.appendChild(delBtn);
+        const actions = document.createElement("div");
+        actions.className = "bill-actions";
+        actions.appendChild(payBtn);
+        actions.appendChild(delBtn);
 
         billDiv.appendChild(checkbox);
         billDiv.appendChild(info);
-        billDiv.appendChild(rightControls);
+        billDiv.appendChild(actions);
+
         billList.appendChild(billDiv);
 
         if (!bill.paid) totalDue += bill.amount;
       });
-
       totalDueDisplay.textContent = totalDue.toFixed(2);
     }
 
-    function updateMonthDisplay() {
-      currentMonthDisplay.textContent = monthNames[currentMonthIndex];
-      renderBills();
-    }
-
+    // ---- On pageload ----
     window.addEventListener("DOMContentLoaded", () => {
       loadFromStorage();
       updateMonthDisplay();
     });
+    // hide form on submit or cancel outside
+    document.addEventListener("keydown",function(e){
+      if(e.key==='Escape') hideForm();
+    });
+    billForm.addEventListener('dblclick',hideForm);
   </script>
 </body>
 </html>
